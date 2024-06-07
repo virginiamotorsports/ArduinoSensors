@@ -8,22 +8,36 @@
 // #define MAX_RIGHT_SA_SENSOR 120
 // #define MAX_RIGHT_SA_WHEEL 23
 
-#define NUM_LEDS 17
-#define SA_PIN A5 
-#define FLWS_PIN A4
-#define RLWS_PIN A3
-#define IS_PIN 3
-#define LED_PIN 6
+// Signals definitions:
+// These are random guesses until we do continuity checks
+#define RR_PIN A0
+#define RL_PIN A1
+#define FR_PIN A3
+#define FL_PIN A4
+#define BP_PIN A5
+
+//#define NUM_LEDS 17
+//#define SA_PIN A5 
+//#define FLWS_PIN A4
+//#define RLWS_PIN A3
+//#define IS_PIN 3
+//#define LED_PIN 6
 // #define CANRX 13 
-#define DRIVESIGNAL_PIN 12
+//#define DRIVESIGNAL_PIN 12
 // #define CANTX 10
-#define BUZZER_PIN 9
-#define BP_PIN A2
+//#define BUZZER_PIN 9
+//#define BP_PIN A2
 
 #define ADC_MAX_VAL ((1 << 14) - 1)
 
 const float vref = 5.0;
 const float bp_full_scale = 100.0;
+
+const float rr_full_scale = 100.0;
+const float rl_full_scale = 100.0;
+const float fr_full_scale = 100.0;
+const float fl_full_scale = 100.0;
+
 
 const uint16_t battery_health_red[9] = {(255/11)*8, (255/11)*7, (255/11)*6, (255/11)*5, (255/11)*4, (255/11)*3, (255/11)*2, (255/11)*1, (255/11)*0};
 const uint16_t battery_health_green[9] = {(255/11)*3, (255/11)*4, (255/11)*5, (255/11)*6, (255/11)*7, (255/11)*8, (255/11)*9, (255/11)*10, (255/11)*11};
@@ -147,15 +161,67 @@ float process_brake_pressure(uint32_t adc) {
   bp_voltage = (adc*vref)/ADC_MAX_VAL ;
   bp = ((bp_voltage - 0.5) / (vref-1)) * bp_full_scale;
 
-  // Serial.print("BP Voltage: ");
-  // Serial.println(bp_voltage);
+   Serial.print("BP Voltage: ");
+   Serial.println(bp_voltage);
   // Serial.print("BP ADC Val: ");
   // Serial.println(analogRead(BP_PIN));
 
   return bp;
 }
 
-uint32_t process_wheel_speed(uint32_t adc) {
+float process_RR_suspension(uint32_t adc) {
+  float rr_voltage;
+  float rr;
+  rr_voltage = (adc*vref)/ADC_MAX_VAL;
+  rr = ((rr_voltage - 0.5) / (vref-1)) * rr_full_scale;
+
+  Serial.print("RR voltage: ");
+  Serial.print(rr_voltage);
+  // Serial.print("RR ADC Val: ");
+  // Serial.println(analogRead(RR_PIN));
+}
+
+float process_RL_suspension(uint32_t adc) {
+  float rl_voltage;
+  float rl;
+  rl_voltage = (adc*vref)/ADC_MAX_VAL;
+  rl = ((rl_voltage - 0.5) / (vref-1)) * rl_full_scale;
+
+  Serial.print("RL voltage: ");
+  Serial.print(rl_voltage);
+  // Serial.print("RL ADC Val: ");
+  // Serial.println(analogRead(RL_PIN));
+  return rl;
+}
+
+float process_FR_suspension(uint32_t adc) {
+  float fr_voltage;
+  float fr;
+  fr_voltage = (adc*vref)/ADC_MAX_VAL;
+  fr = ((fr_voltage - 0.5) / (vref-1)) * fr_full_scale;
+
+  Serial.print("FR voltage: ");
+  Serial.print(fr_voltage);
+  // Serial.print("FR ADC Val: ");
+  // Serial.println(analogRead(FR_PIN));
+  return fr;
+}
+
+float process_FL_suspension(uint32_t adc) {
+  float fl_voltage;
+  float fl;
+  fl_voltage = (adc*vref)/ADC_MAX_VAL;
+  fl = ((fl_voltage - 0.5) / (vref-1)) * fl_full_scale;
+
+  Serial.print("FL voltage: ");
+  Serial.print(fl_voltage);
+  // Serial.print("FL ADC Val: ");
+  // Serial.println(analogRead(FL_PIN));
+  return fl;
+}
+
+
+/* uint32_t process_wheel_speed(uint32_t adc) {
 
   uint32_t ws_voltage;
   uint32_t ws_frequency;
@@ -187,4 +253,4 @@ void PlayRTDBuzzer(uint8_t pin_num) {
 
     digitalWrite(pin_num, LOW);
     delay(1000);
-}
+} */

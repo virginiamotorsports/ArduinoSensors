@@ -11,38 +11,47 @@
 
 
 //define initial states 
-uint32_t steering_angle;
-uint32_t rearleftws;
-uint32_t frontleftws;
-uint32_t inertia;
-bool drive;
-bool last_drive;
-uint8_t battery_soc_percent = 25;
-int8_t max_temp = 0;
-int8_t min_temp = 0;
-float_t actual_pack_voltage = 0;
 
-float_t brake_pressure;
-uint32_t coolant_temp;
+uint32_t brake_pressure;
+uint32_t rearright_suspension;
+uint32_t rearleft_suspension;
+uint32_t frontright_suspension;
+uint32_t frontleft_suspension;
 
-uint8_t battery_health = 3;
+// uint32_t steering_angle;
+// uint32_t rearleftws;
+// uint32_t frontleftws;
+// uint32_t inertia;
+//bool drive;
+//bool last_drive;
+// uint8_t battery_soc_percent = 25;
+// int8_t max_temp = 0;
+// int8_t min_temp = 0;
+// float_t actual_pack_voltage = 0;
 
-uint16_t count = 0;
+// float_t brake_pressure;
+// uint32_t coolant_temp;
+
+// uint8_t battery_health = 3;
+
+// uint16_t count = 0;
 
 // Note frequencies (in Hz) for the "ray ray, UVA" part
-#define NOTE_G4 392
-#define NOTE_A4 440
-#define NOTE_E5 659
+//#define NOTE_G4 392
+//#define NOTE_A4 440
+//#define NOTE_E5 659
 
 // Note durations (in milliseconds)
-#define QUARTER_NOTE 375
-#define HALF_NOTE 750
+//#define QUARTER_NOTE 375
+//#define HALF_NOTE 750
 
-int melody[] = {NOTE_G4, NOTE_G4, NOTE_A4, NOTE_G4, NOTE_E5};
-int noteDurations[] = {HALF_NOTE, HALF_NOTE, QUARTER_NOTE, QUARTER_NOTE, QUARTER_NOTE};
+//int melody[] = {NOTE_G4, NOTE_G4, NOTE_A4, NOTE_G4, NOTE_E5};
+//int noteDurations[] = {HALF_NOTE, HALF_NOTE, QUARTER_NOTE, QUARTER_NOTE, QUARTER_NOTE};
 
 
-uint8_t is_bytes[8] {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, inertia ? 0x01 : 0x00};
+uint8_t brake_pressure_bytes[8] {0xFF, 0xFF, 0xFF, 0xFF, 0x00, 0x00, 0x00, 0x00}; //Cole
+
+//uint8_t is_bytes[8] {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00}; // inertia
 // char rtd_bytes[8] {0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, drive ? 0xFF : 0x00};
 // char flws_bytes[8] {0xFF, 0xFF, 0xFF, 0xFF, 
 //               ((frontleftws >> 24) & 0xFF), ((frontleftws >> 16) & 0xFF), 
@@ -57,55 +66,83 @@ uint8_t is_bytes[8] {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, inertia ? 0x01 : 
 void setup() {
 
   analogReadResolution(14);
-  pinMode(SA_PIN, INPUT_PULLUP);
+
+  pinMode(RR_PIN, INPUT);
+  pinMode(RL_PIN, INPUT);
+  pinMode(FR_PIN, INPUT);
+  pinMode(FL_PIN, INPUT);
+  pinMode(BP_PIN, INPUT);
+
+
+  //pinMode(SA_PIN, INPUT_PULLUP);
   // pinMode(FLWS_PIN, INPUT);
-  // pinMode(RLWS_PIN, INPUT);
-  pinMode(IS_PIN, INPUT);
+  //pinMode(RLWS_PIN, INPUT);
+  //pinMode(IS_PIN, INPUT);
   // pinMode(LED_PIN, INPUT);
   // pinMode(CANRX, INPUT);
-  pinMode(DRIVESIGNAL_PIN, INPUT);
+  //pinMode(DRIVESIGNAL_PIN, INPUT);
   // pinMode(CANTX, INPUT);
-  pinMode(BUZZER_PIN, OUTPUT);
-  pinMode(LED_PIN, OUTPUT);
+  //pinMode(BUZZER_PIN, OUTPUT);
+  //pinMode(LED_PIN, OUTPUT);
 
   Serial.begin(9600);
   Serial1.begin(BAUDRATE, SERIAL_8N1);
   Serial1.setTimeout(1000);
 
-  pixels.clear(); // Set all pixel colors to 'off'
-  pixels.begin(); // INITIALIZE NeoPixel strip object (REQUIRED)
+  //pixels.clear(); // Set all pixel colors to 'off'
+  //pixels.begin(); // INITIALIZE NeoPixel strip object (REQUIRED)
 
   if (!CAN.begin(CanBitRate::BR_500k)) {
     Serial.println("Starting CAN failed!");
     while (1);
   }
 
-  Serial.print("Hello this the the Dashboard Code\r\n");
+  Serial.print("Hello this the the sensor code\r\n");
 }
 
 
 void loop() {
 
-  brake_pressure = process_brake_pressure(analogRead(BP_PIN));
-  // Serial.print("Brake Pressure: ");
-  // Serial.println(brake_pressure);
+  brake_pressure = process_brake_pressure(analogRead(BP_Pin));
+  Serial.print("Brake Pressure: ");
+  Serial.println(brake_pressure);
+  
+  rearright_suspension = process_rearright_suspension(analogRead(RR_PIN));
+  Serial.print("Rear right suspension: ");
+  Serial.println(rearright_suspension);
 
-  rearleftws = process_wheel_speed(analogRead(RLWS_PIN));
-  frontleftws = process_wheel_speed(analogRead(FLWS_PIN));
+  rearleft_suspension = process_rearleft_suspension(analogRead(RL_PIN));
+  Serial.print("Rear left suspension: ");
+  Serial.println(rearleft_suspension);
 
-  inertia = (digitalRead(IS_PIN) == HIGH ? true : false);
-  drive = (digitalRead(DRIVESIGNAL_PIN) == HIGH ? true : false);
+  frontright_suspension = process_frontright_suspension(analogRead(FR_PIN));
+  Serial.print("Front right suspension: ");
+  Serial.println(frontright_suspension);
 
-  steering_angle = process_steering_angle(analogRead(SA_PIN));
+  frontleft_suspension = process_frontleft_suspension(analogRead(FL_PIN));
+  Serial.print("Front left suspension: ");
+  Serial.println(frontleft_suspension);
 
-  if(drive == true && last_drive == false){
-    PlayRTDBuzzer(BUZZER_PIN);
-  }
-  last_drive = drive;
 
-  UpdateBatteryHealth(battery_soc_percent);
 
-  UpdateIndicators();
+
+  //rearleftws = process_wheel_speed(analogRead(RLWS_PIN));
+  //frontleftws = process_wheel_speed(analogRead(FLWS_PIN));
+
+  //inertia = (digitalRead(IS_PIN) == HIGH ? true : false);
+  //drive = (digitalRead(DRIVESIGNAL_PIN) == HIGH ? true : false);
+
+  //steering_angle = process_steering_angle(analogRead(SA_PIN));
+
+
+  // if(drive == true && last_drive == false){
+  //   PlayRTDBuzzer(BUZZER_PIN);
+  // }
+  // last_drive = drive;
+
+  //UpdateBatteryHealth(battery_soc_percent);
+
+  // UpdateIndicators();
 
   send_can_data();
 
@@ -118,16 +155,24 @@ void loop() {
 
 void send_can_data(void){
 
-  CanMsg is_message = CanMsg(CanExtendedId(0x1806E5F4), 8, is_bytes);
+  uint8_t brake_pressure_bytes[8] {0xFF, 0xFF, 0xFF, 0xFF, 0x00, 0x00, 0x00, 0x00};
+  brake_pressure_bytes[4] = (brake_pressure >> 24) & 0xFF;
+  brake_pressure_bytes[5] = (brake_pressure >> 16) & 0xFF;
+  brake_pressure_bytes[6] = (brake_pressure >> 8) & 0xFF;
+  brake_pressure_bytes[7] = brake_pressure & 0xFF;
 
+  CanMsg brake_pressure_message = CanMsg(CanExtendedId(0x1806E5F5), 8, brake_pressure_bytes);
+  
   if(count > 1){
-    int ret = CAN.write(is_message);
-    Serial.println(is_message);
-    if(!(ret == 0 || ret == 1)){
+    int ret_brake = CAN.write(brake_pressure_message);
+    Serial.print("Brake Pressure CAN Message: ");
+    Serial.println(brake_pressure_message);
+    if(!(ret_brake == 0 || ret_brake == 1)){
         Serial.print("CAN Error: ");
-        Serial.println(ret);
+        Serial.println(ret_brake);
         CAN.clearError();
     }
+
     count = 0;
   }
 
@@ -174,11 +219,11 @@ void handleBPmsg(const CanMsg &msg) {
   Serial.println(bp);
 }
 
-void PlayRTDBuzzer(int pin_num){
+/* void PlayRTDBuzzer(int pin_num){
   // Play the melody
   for (int i = 0; i < 5; i++) {
     tone(BUZZER_PIN, melody[i], noteDurations[i]);
     delay(noteDurations[i] * 1.30);  // Add a small delay between notes
     noTone(BUZZER_PIN);              // Stop the tone
   }
-}
+} */
