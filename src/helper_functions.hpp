@@ -42,7 +42,7 @@ const float fl_full_scale = 100.0;
 const uint16_t battery_health_red[9] = {(255/11)*8, (255/11)*7, (255/11)*6, (255/11)*5, (255/11)*4, (255/11)*3, (255/11)*2, (255/11)*1, (255/11)*0};
 const uint16_t battery_health_green[9] = {(255/11)*3, (255/11)*4, (255/11)*5, (255/11)*6, (255/11)*7, (255/11)*8, (255/11)*9, (255/11)*10, (255/11)*11};
 
-Adafruit_NeoPixel pixels(NUM_LEDS, LED_PIN, NEO_GRB + NEO_KHZ800);
+//Adafruit_NeoPixel pixels(NUM_LEDS, LED_PIN, NEO_GRB + NEO_KHZ800);
 
 typedef struct {
     bool AMS_Fault;
@@ -88,7 +88,7 @@ Flags_Indexes Indicator_Indexes = {14, //
                                    
                                    
 
-
+/* 
 void UpdateIndicators(void) {
   if (Indicator_Flags.AMS_Fault) {
     pixels.setPixelColor(Indicator_Indexes.AMS_Indicator_Index, pixels.Color(255, 0, 0));
@@ -151,7 +151,7 @@ void UpdateBatteryHealth(uint8_t bat) {
   }
   pixels.show();
   // delay(2000);
-}
+} */
 
 float process_brake_pressure(uint32_t adc) {
   

@@ -1,6 +1,6 @@
 #include "can_helpers.hpp"
 #include <Arduino_CAN.h>
-#include <experimental/filesystem>
+//#include <experimental/filesystem>
 #include <stdio.h>
 #include <math.h>
 #include <string.h>
@@ -34,7 +34,7 @@ uint32_t frontleft_suspension;
 
 // uint8_t battery_health = 3;
 
-// uint16_t count = 0;
+ uint16_t count = 0;
 
 // Note frequencies (in Hz) for the "ray ray, UVA" part
 //#define NOTE_G4 392
@@ -103,23 +103,23 @@ void setup() {
 
 void loop() {
 
-  brake_pressure = process_brake_pressure(analogRead(BP_Pin));
+  brake_pressure = process_brake_pressure(analogRead(BP_PIN));
   Serial.print("Brake Pressure: ");
   Serial.println(brake_pressure);
   
-  rearright_suspension = process_rearright_suspension(analogRead(RR_PIN));
+  rearright_suspension = process_RR_suspension(analogRead(RR_PIN));
   Serial.print("Rear right suspension: ");
   Serial.println(rearright_suspension);
 
-  rearleft_suspension = process_rearleft_suspension(analogRead(RL_PIN));
+  rearleft_suspension = process_RL_suspension(analogRead(RL_PIN));
   Serial.print("Rear left suspension: ");
   Serial.println(rearleft_suspension);
 
-  frontright_suspension = process_frontright_suspension(analogRead(FR_PIN));
+  frontright_suspension = process_FR_suspension(analogRead(FR_PIN));
   Serial.print("Front right suspension: ");
   Serial.println(frontright_suspension);
 
-  frontleft_suspension = process_frontleft_suspension(analogRead(FL_PIN));
+  frontleft_suspension = process_FL_suspension(analogRead(FL_PIN));
   Serial.print("Front left suspension: ");
   Serial.println(frontleft_suspension);
 
@@ -183,7 +183,7 @@ void handleCanMessage(const CanMsg &msg) {
   // Serial.println(msg.id);
   switch (msg.id) {
     case ACC_STATUS:
-      handleAmsStatus(msg);
+      //handleAmsStatus(msg);
       break;
     case VCU_INPUTS_ID:
       handleBPmsg(msg);
@@ -201,6 +201,7 @@ void handleAmsFault(const CanMsg &msg) {
   // Parse any other fault conditions
 }
 
+/* 
 void handleAmsStatus(const CanMsg &msg) {
   battery_soc_percent = msg.data[1];
   Indicator_Flags.AMS_Fault = (msg.data[0] >> 1) & 0x1;
@@ -211,7 +212,7 @@ void handleAmsStatus(const CanMsg &msg) {
   actual_pack_voltage = scaled_pack_voltage / 10.0;
 
 
-}
+} */
 
 void handleBPmsg(const CanMsg &msg) {
   Serial.print("Received: ");
