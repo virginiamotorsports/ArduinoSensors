@@ -9,12 +9,13 @@
 // #define MAX_RIGHT_SA_WHEEL 23
 
 // Signals definitions:
-// These are random guesses until we do continuity checks
-#define RR_PIN A0
-#define RL_PIN A1
-#define FR_PIN A3
-#define FL_PIN A4
-#define BP_PIN A5
+#define RR_PIN A3
+#define RL_PIN A4
+#define FR_PIN A1
+#define FL_PIN A5
+#define BP_PIN A0
+
+
 
 //#define NUM_LEDS 17
 //#define SA_PIN A5 
@@ -22,9 +23,9 @@
 //#define RLWS_PIN A3
 //#define IS_PIN 3
 //#define LED_PIN 6
-// #define CANRX 13 
+ #define CANRX 4
 //#define DRIVESIGNAL_PIN 12
-// #define CANTX 10
+ #define CANTX 5
 //#define BUZZER_PIN 9
 //#define BP_PIN A2
 
@@ -39,8 +40,8 @@ const float fr_full_scale = 100.0;
 const float fl_full_scale = 100.0;
 
 
-const uint16_t battery_health_red[9] = {(255/11)*8, (255/11)*7, (255/11)*6, (255/11)*5, (255/11)*4, (255/11)*3, (255/11)*2, (255/11)*1, (255/11)*0};
-const uint16_t battery_health_green[9] = {(255/11)*3, (255/11)*4, (255/11)*5, (255/11)*6, (255/11)*7, (255/11)*8, (255/11)*9, (255/11)*10, (255/11)*11};
+//const uint16_t battery_health_red[9] = {(255/11)*8, (255/11)*7, (255/11)*6, (255/11)*5, (255/11)*4, (255/11)*3, (255/11)*2, (255/11)*1, (255/11)*0};
+//const uint16_t battery_health_green[9] = {(255/11)*3, (255/11)*4, (255/11)*5, (255/11)*6, (255/11)*7, (255/11)*8, (255/11)*9, (255/11)*10, (255/11)*11};
 
 //Adafruit_NeoPixel pixels(NUM_LEDS, LED_PIN, NEO_GRB + NEO_KHZ800);
 

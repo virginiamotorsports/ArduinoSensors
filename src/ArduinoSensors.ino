@@ -49,7 +49,7 @@ uint32_t frontleft_suspension;
 //int noteDurations[] = {HALF_NOTE, HALF_NOTE, QUARTER_NOTE, QUARTER_NOTE, QUARTER_NOTE};
 
 
-uint8_t brake_pressure_bytes[8] {0xFF, 0xFF, 0xFF, 0xFF, 0x00, 0x00, 0x00, 0x00}; //Cole
+uint8_t brake_pressure_bytes[8] {0xFF, 0xFF, 0xFF, 0xFF, 0x00, 0x00, 0x00, 0x00};
 
 //uint8_t is_bytes[8] {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00}; // inertia
 // char rtd_bytes[8] {0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, drive ? 0xFF : 0x00};
@@ -79,9 +79,9 @@ void setup() {
   //pinMode(RLWS_PIN, INPUT);
   //pinMode(IS_PIN, INPUT);
   // pinMode(LED_PIN, INPUT);
-  // pinMode(CANRX, INPUT);
+   pinMode(CANRX, INPUT);
   //pinMode(DRIVESIGNAL_PIN, INPUT);
-  // pinMode(CANTX, INPUT);
+   pinMode(CANTX, OUTPUT);
   //pinMode(BUZZER_PIN, OUTPUT);
   //pinMode(LED_PIN, OUTPUT);
 
@@ -146,24 +146,23 @@ void loop() {
 
   send_can_data();
 
-  while (CAN.available()) {
-    CanMsg msg = CAN.read();
-    handleCanMessage(msg);
-  }
-  // delay(10);
+  delay(10);
 }
 
 void send_can_data(void){
-
+  Serial.print("SENDING");
   uint8_t brake_pressure_bytes[8] {0xFF, 0xFF, 0xFF, 0xFF, 0x00, 0x00, 0x00, 0x00};
   brake_pressure_bytes[4] = (brake_pressure >> 24) & 0xFF;
   brake_pressure_bytes[5] = (brake_pressure >> 16) & 0xFF;
   brake_pressure_bytes[6] = (brake_pressure >> 8) & 0xFF;
   brake_pressure_bytes[7] = brake_pressure & 0xFF;
 
-  CanMsg brake_pressure_message = CanMsg(CanExtendedId(0x1806E5F5), 8, brake_pressure_bytes);
+  //uint64_t suspension_travel[]
+
+  CanMsg brake_pressure_message = CanMsg(CanExtendedId(0x200), 8, brake_pressure_bytes);
   
-  if(count > 1){
+  //if(count > 1){
+
     int ret_brake = CAN.write(brake_pressure_message);
     Serial.print("Brake Pressure CAN Message: ");
     Serial.println(brake_pressure_message);
@@ -173,8 +172,8 @@ void send_can_data(void){
         CAN.clearError();
     }
 
-    count = 0;
-  }
+   // count = 0;
+  //}
 
 }
 
